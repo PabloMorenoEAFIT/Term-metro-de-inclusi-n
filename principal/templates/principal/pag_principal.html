@@ -24,5 +24,30 @@
         {% endfor %}
 
     </ul>
+    <div class="contenedor">
+        <p>Este es un párrafo de ejemplo con <span class="subrayado" data-descripcion="Descripción de la palabra 1">palabra1</span> y <span class="subrayado" data-descripcion="Descripción de la palabra 2">palabra2</span>.</p>
+    </div>
+    
+    <div class="popover" id="popover">
+        <p id="descripcion"></p>
+    </div>  
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="static/pag_princiapl.js"></script>
+
+        <script>
+            $(document).ready(function() {
+                $(".subrayado").hover(function() {
+                    var descripcion = $(this).attr("data-descripcion");
+                    $("#descripcion").text(descripcion);
+                    $("#popover").css({
+                        top: $(this).offset().top - $("#popover").outerHeight(),
+                        left: $(this).offset().left + $(this).width()
+                    }).show();
+                }, function() {
+                    $("#popover").hide();
+                });
+            });
+        </script>
+  
 </body>
 </html>

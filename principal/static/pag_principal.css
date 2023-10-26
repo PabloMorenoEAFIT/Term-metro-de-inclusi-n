@@ -1,0 +1,14 @@
+.subrayado {
+    text-decoration: underline;
+    color: blue;
+    cursor: help;
+}
+
+.popover {
+    display: none;
+    position: absolute;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 10px;
+    box-shadow: 0px 0px 5px 0px #ccc;
+}
