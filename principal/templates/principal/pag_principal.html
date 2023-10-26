@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mi Página</title>
+    <style>
+        .resaltado {
+            background-color: yellow;
+        }
+    </style>
+</head>
+<body>
+    <h1>Mi Página</h1>
+    <form method="post" action="{% url 'pagina_principal' %}">
+        {% csrf_token %}
+        <textarea name="parrafo" rows="5" cols="50"></textarea>
+        <button type="submit">Guardar</button>
+    </form>
+    <h2>Párrafos:</h2>
+    <ul>
+        {% for parrafo in parrafos %}
+            <li>
+                 <p>{{ parrafo.texto|safe }}</p>
+            </li>
+        {% endfor %}
+
+    </ul>
+</body>
+</html>
