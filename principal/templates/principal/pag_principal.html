@@ -1,3 +1,5 @@
+{% load custom_filters %}
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -19,35 +21,41 @@
     <ul>
         {% for parrafo in parrafos %}
             <li>
-                 <p>{{ parrafo.texto|safe }}</p>
+                <p>
+                    {% for palabra in palabras_resaltar %}
+                        {% with palabra|escape as palabra_escapada %}
+                            {% with parrafo.texto|linebreaksbr|replace:palabra_escapada|safe as texto_con_resaltado %}
+                                {{ texto_con_resaltado|safe }}
+                            {% endwith %}
+                        {% endwith %}
+                    {% endfor %}
+                </p>
             </li>
         {% endfor %}
-
     </ul>
+
     <div class="contenedor">
         <p>Este es un párrafo de ejemplo con <span class="subrayado" data-descripcion="Descripción de la palabra 1">palabra1</span> y <span class="subrayado" data-descripcion="Descripción de la palabra 2">palabra2</span>.</p>
     </div>
-    
+
     <div class="popover" id="popover">
         <p id="descripcion"></p>
-    </div>  
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="static/pag_princiapl.js"></script>
+    </div>
 
-        <script>
-            $(document).ready(function() {
-                $(".subrayado").hover(function() {
-                    var descripcion = $(this).attr("data-descripcion");
-                    $("#descripcion").text(descripcion);
-                    $("#popover").css({
-                        top: $(this).offset().top - $("#popover").outerHeight(),
-                        left: $(this).offset().left + $(this).width()
-                    }).show();
-                }, function() {
-                    $("#popover").hide();
-                });
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $(".subrayado").hover(function() {
+                var descripcion = $(this).data("descripcion");
+                $("#descripcion").text(descripcion);
+                $("#popover").css({
+                    top: $(this).offset().top - $("#popover").outerHeight(),
+                    left: $(this).offset().left + $(this).width()
+                }).show();
+            }, function() {
+                $("#popover").hide();
             });
-        </script>
-  
+        });
+    </script>
 </body>
 </html>

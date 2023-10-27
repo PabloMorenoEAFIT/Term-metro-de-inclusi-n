@@ -1,4 +1,3 @@
-
 from django.shortcuts import render
 from .models import Parrafo
 
@@ -7,7 +6,10 @@ def pagina_principal(request):
     palabras_resaltar = ["palabra1", "palabra2", "palabra3"]
     
     for parrafo in parrafos:
+        texto_modificado = parrafo.texto
         for palabra in palabras_resaltar:
-            parrafo.texto = parrafo.texto.replace(palabra, f'<span class="resaltado">{palabra}</span>')
+            texto_modificado = texto_modificado.replace(palabra, f'<span class="resaltado">{palabra}</span>')
+        parrafo.texto = texto_modificado
+        parrafo.save()  # Guarda el parrafo modificado en la base de datos
     
     return render(request, 'principal/pag_principal.html', {'parrafos': parrafos})
