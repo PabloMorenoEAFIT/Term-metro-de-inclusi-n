@@ -1,0 +1,1 @@
+palabras_predefinidas = ['palabra1', 'palabra2', 'palabra3', 'sopa']

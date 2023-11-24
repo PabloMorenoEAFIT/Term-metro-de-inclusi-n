@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <title>Ingresar como Empresa</title>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Ingresar como Empresa</h1>
+        <form method="post" id="empresaForm">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="empresa">Selecciona una empresa:</label>
+                <select class="form-control" id="empresa" name="empresa">
+                    <!-- Opciones de empresa se llenarán dinámicamente con AJAX -->
+                </select>
+            </div>
+
+            <button type="button" class="btn btn-primary" onclick="seleccionarEmpresa()">Seleccionar</button>
+        </form>
+
+        <!-- Mostrar la información de la empresa seleccionada aquí -->
+        <div id="infoEmpresa" class="mt-4"></div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            cargarEmpresas();
+        });
+
+        function cargarEmpresas() {
+            var selectEmpresa = document.getElementById('empresa');
+            var xhr = new XMLHttpRequest();
+
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    var data = JSON.parse(xhr.responseText);
+                    data.empresas.forEach(function(empresa) {
+                        var option = document.createElement('option');
+                        option.value = empresa;
+                        option.text = empresa;
+                        selectEmpresa.add(option);
+                    });
+                }
+            };
+
+            xhr.open('GET', '/select-empresa/');
+            xhr.send();
+        }
+
+        function seleccionarEmpresa() {
+            var empresaSeleccionada = document.getElementById('empresa').value;
+            var infoEmpresaDiv = document.getElementById('infoEmpresa');
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', '/empresa-info/' + encodeURIComponent(empresaSeleccionada) + '/');
+            xhr.send();
+
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        // Convertir la respuesta JSON a un objeto JavaScript
+                        var respuesta = JSON.parse(xhr.responseText);
+
+                        // Mostrar la información en el div
+                        infoEmpresaDiv.innerHTML = '<h2>' + respuesta.empresa_seleccionada + '</h2>';
+                        
+                        // Mostrar detalles de ofertas
+                        if (respuesta.ofertas && respuesta.ofertas.length > 0) {
+                            infoEmpresaDiv.innerHTML += '<h3>Ofertas:</h3>';
+                            respuesta.ofertas.forEach(function(oferta) {
+                                infoEmpresaDiv.innerHTML += '<p>' + oferta.nombre_oferta + '</p>';
+                                // Añadir más campos según sea necesario
+                            });
+                        }
+                    } else {
+                        // Manejar errores si es necesario
+                        console.error('Error en la solicitud AJAX:', xhr.statusText);
+                    }
+                }
+            };
+
+            xhr.open('GET', '/empresa-info/' + empresaSeleccionada + '/');
+            xhr.send();
+        }
+    </script>
+</body>
+</html>

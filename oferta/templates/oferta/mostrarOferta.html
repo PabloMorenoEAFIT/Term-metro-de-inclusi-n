@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Ofertas</title>
+    <!-- Agrega los enlaces a los archivos CSS y JS de Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Ofertas</h1>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Descripción</th>
+                    <th>Empresa</th>
+                    <th>Fecha</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for oferta in ofertas %}
+                    <tr class="oferta-row" data-id="{{ oferta.id_oferta }}">
+                        <td>{{ oferta.id_oferta }}</td>
+                        <td>{{ oferta.nombre_oferta }}</td>
+                        <td>{{ oferta.descripcion_oferta }}</td>
+                        <td>{{ oferta.empresa_oferta }}</td>
+                        <td>{{ oferta.fecha_oferta }}</td>
+                        <td>
+                            <button class="btn btn-primary" onclick="buscarPalabrasSimilares('{{ oferta.descripcion_oferta }}', '{{ oferta.id_oferta }}')">Buscar</button>
+                            <button class="btn btn-danger" onclick="eliminarOferta('{{ oferta.id_oferta }}')">Eliminar</button>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        function buscarPalabrasSimilares(descripcion, idOferta) {
+            // Dividir la descripción en palabras
+            const palabras = descripcion.split(' ');
+
+            // Buscar las palabras específicas
+            const palabra1Presente = palabras.includes('sesgos');
+            const palabra2Presente = palabras.includes('sesgo1');
+            const palabra3Presente = palabras.includes('sesgo2');
+
+            // Mostrar resultados en la consola
+            console.log('Palabras en la descripción:', palabras);
+            console.log('Palabra 1 presente:', palabra1Presente);
+            console.log('Palabra 2 presente:', palabra2Presente);
+            console.log('Palabra 3 presente:', palabra3Presente);
+
+            // Obtener el elemento tr de la oferta
+            const ofertaRow = document.querySelector(`.oferta-row[data-id="${idOferta}"]`);
+
+            // Verificar si el elemento existe antes de manipularlo
+            if (ofertaRow) {
+                // Agregar o quitar la clase según si se encuentran las palabras clave
+                if (palabra1Presente || palabra2Presente || palabra3Presente) {
+                    ofertaRow.classList.add('oferta-con-palabras');
+                } else {
+                    ofertaRow.classList.remove('oferta-con-palabras');
+                }
+            } else {
+                console.error('Elemento de oferta no encontrado.');
+            }
+        
+        }
+
+        function eliminarOferta(idOferta) {
+            // Confirmar si realmente se desea eliminar la oferta
+            if (confirm("¿Seguro que deseas eliminar esta oferta?")) {
+                // Realizar la solicitud AJAX para eliminar la oferta
+                fetch(`/eliminar-oferta/${idOferta}/`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken'),  // Asegúrate de tener la función getCookie definida
+                    },
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error al eliminar la oferta');
+                    }
+                    // Eliminar la fila de la tabla después de eliminar la oferta en el backend
+                    const ofertaRow = document.querySelector(`.oferta-row[data-id="${idOferta}"]`);
+                    if (ofertaRow) {
+                        ofertaRow.remove();
+                    }
+                })
+                .catch(error => {
+                    console.error(error);
+                    alert('Error al eliminar la oferta');
+                });
+            }
+        }
+
+        // Función auxiliar para obtener el valor de una cookie por su nombre
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+    </script>
+</body>
+</html>

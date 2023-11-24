@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <title>Oferta Formulario</title>
+    <style>
+        /* Estilo adicional si lo necesitas */
+        #resultado {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .subrayado {
+            text-decoration: underline;
+            color: blue; /* Opcional: puedes cambiar el color del subrayado */
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <form method="post" action="{% url 'guardar_oferta_url' %}">
+
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="id_oferta">ID de Oferta:</label>
+                <input type="text" class="form-control" id="id_oferta" name="id_oferta" required>
+            </div>
+            <div class="form-group">
+                <label for="nombre_oferta">Nombre de Oferta:</label>
+                <input type="text" class="form-control" id="nombre_oferta" name="nombre_oferta" required>
+            </div>
+            <div class="form-group">
+                <label for="descripcion_oferta">Descripción de Oferta:</label>
+                <textarea class="form-control" id="descripcion_oferta" name="descripcion_oferta" rows="5" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="empresa_oferta">Empresa de Oferta:</label>
+                <input type="text" class="form-control" id="empresa_oferta" name="empresa_oferta" required>
+            </div>
+            <div class="form-group">
+                <label for="fecha_oferta">Fecha de Oferta:</label>
+                <input type="date" class="form-control" id="fecha_oferta" name="fecha_oferta" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Guardar Oferta</button>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            obtenerPalabrasPredefinidas();
+        });
+    
+        function obtenerPalabrasPredefinidas() {
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        var respuesta = JSON.parse(xhr.responseText);
+                        console.log('Palabras predefinidas obtenidas:', respuesta.palabras_predefinidas);
+                        var palabrasPredefinidas = respuesta.palabras_predefinidas;
+                        subrayarPalabras(palabrasPredefinidas);
+                    } else {
+                        console.error('Error en la solicitud AJAX:', xhr.statusText);
+                    }
+                }
+            };
+            xhr.open('GET', '/palabras-predefinidas/');
+            xhr.send();
+        }
+    
+        function subrayarPalabras(palabrasPredefinidas) {
+            var parrafo = document.getElementById('parrafo');
+            var resultado = document.getElementById('resultado');
+    
+            if (parrafo && resultado) {
+                var contenido = parrafo.value;
+    
+                if (palabrasPredefinidas && palabrasPredefinidas.length > 0) {
+                    palabrasPredefinidas.forEach(function(palabra) {
+                        var expresion = new RegExp('\\b' + palabra + '\\b', 'gi');
+                        contenido = contenido.replace(expresion, function(match) {
+                            return '<span class="subrayado">' + match + '</span>';
+                        });
+                    });
+                }
+
+                // Limpiar el contenido anterior
+                while (resultado.firstChild) {
+                    resultado.removeChild(resultado.firstChild);
+                }
+
+                // Crear un nuevo nodo de texto para cada palabra
+                contenido.split(/\s+/).forEach(function(word) {
+                    var span = document.createElement('span');
+                    span.className = palabrasPredefinidas && palabrasPredefinidas.includes(word.toLowerCase()) ? 'subrayado' : '';
+                    span.appendChild(document.createTextNode(word + ' '));
+                    resultado.appendChild(span);
+                });
+            } else {
+                console.error('Error: Alguno de los elementos o variables necesarias es undefined.');
+            }
+        }
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+</body>
+</html>
