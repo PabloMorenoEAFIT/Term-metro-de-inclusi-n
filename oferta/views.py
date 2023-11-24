@@ -86,11 +86,11 @@ def generar_descripcion_consesgo(prompt_words):
         response = openai.Completion.create(
             engine="text-davinci-003",  
             prompt=prompt,
-            max_tokens=150,  # Ajusta según tus preferencias
-            n=1,  # Número de respuestas a generar
+            max_tokens=500, 
+            n=1,  
         )
 
-        # Obtener la respuesta generada
+        # respuesta generada
         generated_text = response.choices[0].text.strip()
 
         return JsonResponse({'generated_text': generated_text})
@@ -102,10 +102,10 @@ def generar_descripcion_consesgo(prompt_words):
 @csrf_exempt
 def generar_descripcion_consesgo_view(request):
     if request.method == 'POST':
-        # Obtener la lista de palabras del cuerpo de la solicitud POST
+        # Obtener palabras 
         prompt_words = request.POST.getlist('prompt_words[]', [])
         
-        # Llamar a la función para generar la descripción con sesgo
+        # funcion descripción con sesgo
         response_data = generar_descripcion_consesgo(prompt_words)
         
         return response_data

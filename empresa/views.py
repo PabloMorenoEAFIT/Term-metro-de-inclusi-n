@@ -16,7 +16,7 @@ def obtener_oferta(request, id_oferta):
         # Obtener información de la oferta por su ID
         oferta = get_object_or_404(Oferta, id_oferta=id_oferta)
         
-        # Devolver la información como JSON
+        # Devolver la información 
         data = {
             'id_oferta': oferta.id_oferta,
             'nombre_oferta': oferta.nombre_oferta,
